@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>🎵 Reproductor</title>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 50px 20px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .contenedor-input {
+      display: flex;
+      position: relative;
+      align-items: center;
+    }
+
+    #cancion,
+    .boton-enviar {
+      height: 48px;
+      box-sizing: border-box;
+    }
+
+    #cancion {
+      width: 400px;
+      padding: 12px 16px;
+      border-radius: 8px 0 0 8px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .boton-enviar {
+      padding: 0 20px;
+      font-size: 20px;
+      background: #1db954;
+      color: white;
+      border: none;
+      border-radius: 0 8px 8px 0;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      user-select: none;
+    }
+
+    .boton-enviar:hover {
+      background: #1ed760;
+    }
+
+    #sugerencias {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #1e1e1e;
+      color: white;
+      width: 400px;
+      margin-top: 2px;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 999;
+      padding: 0;
+    }
+
+    #sugerencias li {
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    #sugerencias li:hover,
+    #sugerencias li.seleccionada {
+      background: #2e7d32;
+    }
+
+    #boton-saltar {
+      margin-top: 20px;
+      background: #f44336;
+      color: white;
+      font-size: 20px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(244, 67, 54, 0.6);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+      font-weight: 600;
+    }
+
+    #boton-saltar:hover {
+      background: #e53935;
+      box-shadow: 0 6px 14px rgba(229, 57, 53, 0.8);
+    }
+
+    #respuesta {
+      margin-top: 10px;
+      font-size: 18px;
+      min-height: 24px;
+      color: #a5d6a7;
+      text-align: center;
+      width: 400px;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #respuesta.mostrar {
+      background-color: #4caf50;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      opacity: 1;
+      text-align: center;
+      width: 400px;
+      margin: 20px auto 0;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <h2>🎵 Radio Calaverita 💀 - Añadir Una Canción 🎵</h2>
+
+  <div class="contenedor-input">
+    <input id="cancion" placeholder="Nombre o link de la canción" autocomplete="off" />
+    <button class="boton-enviar" onclick="pedir()">→</button>
+    <ul id="sugerencias"></ul>
+  </div>
+
+  <p id="respuesta"></p>
+
+  <button id="boton-saltar" onclick="saltar()">⏭️ Saltar canción</button>
+
+  <script>
+    function debounce(func, delay) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+      };
+    }
+
+    let indiceSeleccionado = -1;
+
+    async function pedir() {
+      const input = document.getElementById("cancion");
+      const cancion = input.value;
+      const respuesta = document.getElementById("respuesta");
+
+      try {
+        const res = await fetch("http://127.0.0.1:5000//pedir-cancion", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cancion }),
+        });
+        const data = await res.json();
+        mostrarMensaje(data.msg, data.error);
+        if (!data.error) input.value = "";
+      } catch (error) {
+        mostrarMensaje("❌ Error al enviar la canción", true);
+      }
+
+      document.getElementById("sugerencias").innerHTML = "";
+      indiceSeleccionado = -1;
+    }
+
+    function saltar() {
+      fetch("http://127.0.0.1:5000//skip", {
+        method: "POST",
+      })
+      .then(res => res.json())
+      .then(data => mostrarMensaje(data.msg))
+      .catch(() => mostrarMensaje("❌ Error al saltar canción", true));
+    }
+
+    function mostrarMensaje(texto, error = false) {
+      const respuesta = document.getElementById("respuesta");
+      respuesta.classList.remove("mostrar");
+      respuesta.style.opacity = "0";
+      respuesta.innerText = texto;
+      respuesta.style.backgroundColor = error ? "#f44336" : "#4caf50";
+
+      // Esperar para aplicar clase de animación sin conflictos
+      setTimeout(() => {
+        respuesta.classList.add("mostrar");
+        respuesta.style.opacity = "1";
+      }, 10);
+
+      // Ocultar el mensaje con desvanecimiento
+      setTimeout(() => {
+        respuesta.style.opacity = "0";
+        setTimeout(() => {
+          respuesta.classList.remove("mostrar");
+          respuesta.innerText = "";
+        }, 1000);
+      }, 6000);
+    }
+
+    async function sugerir() {
+      const texto = document.getElementById("cancion").value;
+      const lista = document.getElementById("sugerencias");
+      if (texto.length < 2) return lista.innerHTML = "";
+
+      try {
+        const res = await fetch(`http://127.0.0.1:5000//sugerencias?q=${encodeURIComponent(texto)}`, {
+          headers: { "ngrok-skip-browser-warning": "1" },
+        });
+        const sugerencias = await res.json();
+        lista.innerHTML = "";
+        indiceSeleccionado = -1;
+
+        sugerencias.forEach(([nombreCancion]) => {
+          const item = document.createElement("li");
+          item.innerText = nombreCancion;
+          item.onclick = () => {
+            document.getElementById("cancion").value = nombreCancion;
+            lista.innerHTML = "";
+          };
+          lista.appendChild(item);
+        });
+      } catch {
+        lista.innerHTML = "";
+      }
+    }
+
+    document.addEventListener("click", e => {
+      if (!document.querySelector(".contenedor-input").contains(e.target)) {
+        document.getElementById("sugerencias").innerHTML = "";
+        indiceSeleccionado = -1;
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const input = document.getElementById("cancion");
+      input.addEventListener("input", debounce(sugerir, 600));
+
+      input.addEventListener("keydown", function (e) {
+        const lista = document.getElementById("sugerencias");
+        const items = lista.getElementsByTagName("li");
+
+        if (!items.length) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            pedir();
+          }
+          return;
+        }
+
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (indiceSeleccionado < items.length - 1) {
+            indiceSeleccionado++;
+            actualizarSeleccion(items);
+          }
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (indiceSeleccionado > 0) {
+            indiceSeleccionado--;
+            actualizarSeleccion(items);
+          }
+        } else if (e.key === "Enter" || e.key === "Tab") {
+          if (indiceSeleccionado >= 0 && indiceSeleccionado < items.length) {
+            e.preventDefault();
+            input.value = items[indiceSeleccionado].innerText;
+            lista.innerHTML = "";
+            indiceSeleccionado = -1;
+          } else if (e.key === "Enter") {
+            pedir();
+          }
+        }
+      });
+
+      function actualizarSeleccion(items) {
+        for (let i = 0; i < items.length; i++) {
+          items[i].classList.toggle("seleccionada", i === indiceSeleccionado);
+        }
+        if (indiceSeleccionado >= 0) {
+          items[indiceSeleccionado].scrollIntoView({ block: "nearest" });
+        }
+      }
+    });
+  </script>
+</body>
+</html>
