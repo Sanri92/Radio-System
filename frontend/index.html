@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <title>🎵 Reproductor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
       background: #121212;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
       padding: 50px 20px;
       margin: 0;
+      display: flex;
+      justify-content: center;
     }
 
     h2 {
@@ -28,8 +27,7 @@
       align-items: center;
     }
 
-    #cancion,
-    .boton-enviar {
+    #cancion, .boton-enviar {
       height: 48px;
       box-sizing: border-box;
     }
@@ -46,7 +44,7 @@
     .boton-enviar {
       padding: 0 20px;
       font-size: 20px;
-      background: #1db954;
+      background: #f44336;
       color: white;
       border: none;
       border-radius: 0 8px 8px 0;
@@ -60,7 +58,8 @@
     }
 
     .boton-enviar:hover {
-      background: #1ed760;
+      background: #e53935;
+      box-shadow: 0 6px 14px rgba(229, 57, 53, 0.8);
     }
 
     #sugerencias {
@@ -87,17 +86,18 @@
 
     #sugerencias li:hover,
     #sugerencias li.seleccionada {
-      background: #2e7d32;
+      background: #f44336;
     }
 
     #boton-saltar {
-      margin-top: 20px;
+      margin-top: 0px;
       background: #f44336;
       color: white;
+      width: 355px;
       font-size: 20px;
       padding: 14px 28px;
       border: none;
-      border-radius: 12px;
+      border-radius: 0 0 12px 12px;
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(244, 67, 54, 0.6);
       transition: background 0.3s ease, box-shadow 0.3s ease;
@@ -118,6 +118,7 @@
       text-align: center;
       width: 400px;
       opacity: 0;
+      display: none;
       transition: opacity 1s ease;
     }
 
@@ -132,22 +133,187 @@
       margin: 20px auto 0;
       box-shadow: 0 4px 12px rgba(76, 175, 80, 0.7);
     }
+
+    .tarjeta-cancion {
+      background-color: #1e1e1e;
+      padding: 14px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      width: 48%;
+      min-width: 300px;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+    }
+
+    .posicion {
+      font-size: 28px;
+      font-weight: bold;
+      width: 32px;
+      text-align: center;
+      margin-right: 12px;
+      line-height: 1.4em;
+    }
+
+    .info-cancion {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .autor {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .titulo-duracion {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .boton-quitar {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      width: 36px;
+      height: 36px;
+      padding: 8px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 12px;
+      font-size: 18px;
+    }
+
+    .boton-quitar:hover {
+      background-color: #e53935;
+    }
+
+    .cola-scroll-wrapper {
+      max-height: calc(7 * 100px);
+      overflow-y: auto;
+      margin-top: 0px;
+      width: 100%;
+    }
+
+    .cola-scroll-wrapper::-webkit-scrollbar {
+      width: 8px; 
+    }
+
+    .cola-scroll-wrapper::-webkit-scrollbar-track {
+      background: #f44336;
+    }
+
+    .cola-scroll-wrapper::-webkit-scrollbar-thumb {
+      background-color: #f44336; 
+      border-radius: 10px;      
+      border: 2px solid #1a1a1a;
+    }
+
+    .cola-scroll-wrapper {
+      scrollbar-width: thin;
+      scrollbar-color: #f44336 #1a1a1a;
+    }
+
+    #cola-canciones {
+      margin-top: 23px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      max-width: 1000px;
+    }
+
+    .layout {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      max-width: 1500px;
+      gap: 50px;
+    }
+
+    .columna-izquierda {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-height: 700px;
+      justify-content: center;
+    }
+
+    .columna-derecha {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .contenedor-principal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 36px;
+      margin-bottom: 30px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .tarjeta-actual {
+      background-color: #1e1e1e;
+      color: #fff;
+      padding: 20px;
+      border-radius: 12px 12px 0 0;
+      border: 4px solid #f44336;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      margin-top: 100px;
+      margin-bottom: 0;
+      width: 355px;
+      height: 300px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 500;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
-  <h2>🎵 Radio Calaverita 💀 - Añadir Una Canción 🎵</h2>
+  <div class="contenedor-principal">
+    <h1>Radio Calaverita <i class="fas fa-skull"></i></i></h1>
+    <div class="layout">
+      <div class="columna-izquierda">
+        <h2>Añadir una canción <i class="fas fa-music"></i></i></h2>
+        <div class="contenedor-input">
+          <input id="cancion" placeholder="Nombre o link de la canción" autocomplete="off" />
+          <button class="boton-enviar" onclick="pedir()"><i class="fas fa-arrow-right" style="color: white;"></i></button>
+          <ul id="sugerencias"></ul>
+        </div>
 
-  <div class="contenedor-input">
-    <input id="cancion" placeholder="Nombre o link de la canción" autocomplete="off" />
-    <button class="boton-enviar" onclick="pedir()">→</button>
-    <ul id="sugerencias"></ul>
+        <p id="respuesta"></p>
+
+        <div class="tarjeta-actual">
+          <div id="cancion-actual">Cargando canción actual...</div>
+        </div>
+        <button id="boton-saltar" onclick="saltar()"><i class="fas fa-forward"></i> Saltar canción</button>
+      </div>
+
+      <div class="columna-derecha">
+        <div class="cola-scroll-wrapper">
+          <div id="cola-canciones"></div>  
+        </div>
+      </div>
+    </div>
   </div>
-
-  <p id="respuesta"></p>
-
-  <button id="boton-saltar" onclick="saltar()">⏭️ Saltar canción</button>
-
   <script>
+    const API_URL = "http://127.0.0.1:5000";
+
     function debounce(func, delay) {
       let timeout;
       return function (...args) {
@@ -161,16 +327,15 @@
     async function pedir() {
       const input = document.getElementById("cancion");
       const cancion = input.value;
-      const respuesta = document.getElementById("respuesta");
 
       try {
-        const res = await fetch("http://127.0.0.1:5000//pedir-cancion", {
+        const res = await fetch(`${API_URL}/pedir-cancion`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cancion }),
         });
         const data = await res.json();
-        mostrarMensaje(data.msg, data.error);
+        // mostrarMensaje(data.msg, data.error);
         if (!data.error) input.value = "";
       } catch (error) {
         mostrarMensaje("❌ Error al enviar la canción", true);
@@ -181,11 +346,11 @@
     }
 
     function saltar() {
-      fetch("http://127.0.0.1:5000//skip", {
+      fetch(`${API_URL}/skip`, {
         method: "POST",
       })
       .then(res => res.json())
-      .then(data => mostrarMensaje(data.msg))
+      // .then(data => mostrarMensaje(data.msg))
       .catch(() => mostrarMensaje("❌ Error al saltar canción", true));
     }
 
@@ -195,14 +360,13 @@
       respuesta.style.opacity = "0";
       respuesta.innerText = texto;
       respuesta.style.backgroundColor = error ? "#f44336" : "#4caf50";
+      respuesta.style.color = "white"; 
 
-      // Esperar para aplicar clase de animación sin conflictos
       setTimeout(() => {
         respuesta.classList.add("mostrar");
         respuesta.style.opacity = "1";
       }, 10);
 
-      // Ocultar el mensaje con desvanecimiento
       setTimeout(() => {
         respuesta.style.opacity = "0";
         setTimeout(() => {
@@ -212,15 +376,91 @@
       }, 6000);
     }
 
+    function actualizarCancionActual() {
+        fetch(`${API_URL}/cancion-actual`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.titulo) {
+                    document.getElementById("cancion-actual").innerHTML = `
+                    <div style="margin-bottom: 15px;"><i class="fas fa-music"></i> Canción Actual:</div>
+                    <div style="font-weight: bold; margin-bottom: 15px;">${data.titulo}</div>
+                    <div style="color: #ccc; margin-bottom: 15px;">${data.autor}</div>
+                    <div style="color: #ccc;">Duración: ${data.duracion}</div>
+                  `;
+                } else {
+                    document.getElementById("cancion-actual").textContent = "🔇 No hay canción sonando";
+                }
+            })
+            .catch(err => {
+                document.getElementById("cancion-actual").textContent = "❌ Error al obtener la canción actual";
+                console.error(err);
+            });
+    }
+
+
+    async function verCola() {
+      const contenedor = document.getElementById("cola-canciones");
+      contenedor.innerHTML = "";
+
+      try {
+        const res = await fetch(`${API_URL}/cola`);
+        const cola = await res.json();
+
+        if (!Array.isArray(cola) || cola.length === 0) {
+          contenedor.innerHTML = "<p>No hay canciones en la cola.</p>";
+          return;
+        }
+
+        cola.forEach((cancion, index) => {
+          const tarjeta = document.createElement("div");
+          tarjeta.className = "tarjeta-cancion";
+
+          const posicion = document.createElement("div");
+          posicion.className = "posicion";
+          posicion.textContent = index + 1;
+
+          const info = document.createElement("div");
+          info.className = "info-cancion";
+
+          const autor = document.createElement("div");
+          autor.className = "autor";
+          autor.textContent = cancion.autor;
+
+          const tituloDuracion = document.createElement("div");
+          tituloDuracion.className = "titulo-duracion";
+          tituloDuracion.textContent = `${cancion.titulo} - ${cancion.duracion}`;
+
+          info.appendChild(autor);
+          info.appendChild(tituloDuracion);
+
+          const botonQuitar = document.createElement("button");
+          botonQuitar.className = "boton-quitar";
+          botonQuitar.textContent = "x";
+          botonQuitar.onclick = async () => {
+            await fetch(`${API_URL}/cola/${cancion.id}`, {
+              method: "DELETE"
+            });
+            verCola();
+          };
+
+          tarjeta.appendChild(posicion);
+          tarjeta.appendChild(info);
+          tarjeta.appendChild(botonQuitar);
+          contenedor.appendChild(tarjeta);
+        });
+
+      } catch (error) {
+        mostrarMensaje("❌ Error al cargar la cola", true);
+      }
+    }
+
     async function sugerir() {
       const texto = document.getElementById("cancion").value;
       const lista = document.getElementById("sugerencias");
       if (texto.length < 2) return lista.innerHTML = "";
 
       try {
-        const res = await fetch(`http://127.0.0.1:5000//sugerencias?q=${encodeURIComponent(texto)}`, {
-          headers: { "ngrok-skip-browser-warning": "1" },
-        });
+        const res = await fetch(`${API_URL}/sugerencias?q=${encodeURIComponent(texto)}`);
         const sugerencias = await res.json();
         lista.innerHTML = "";
         indiceSeleccionado = -1;
@@ -295,6 +535,8 @@
         }
       }
     });
+    verCola();
+    actualizarCancionActual(); 
   </script>
 </body>
 </html>
